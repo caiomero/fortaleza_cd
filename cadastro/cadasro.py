@@ -2,11 +2,11 @@ from flask import Flask, render_template, request, redirect
 import sqlite3
 import os
 
-# --------- App Flask ----------
+# ---------- App Flask ----------
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'minha_chave_segura')
 
-# --------- Banco de dados ----------
+# ---------- Banco de dados ----------
 def inicializar_banco():
     conexao = sqlite3.connect('clientes.db')
     cursor = conexao.cursor()
@@ -26,7 +26,7 @@ def inicializar_banco():
 def conectar():
     return sqlite3.connect('clientes.db')
 
-# --------- Rotas ----------
+# ---------- Rotas ----------
 @app.route('/')
 def index():
     conexao = conectar()
@@ -52,8 +52,8 @@ def cadastrar():
         ''', (nome, email, telefone, cpf))
         conexao.commit()
         conexao.close()
-    except:
-        pass
+    except Exception as e:
+        print("Erro ao cadastrar:", e)
 
     return redirect('/')
 
@@ -66,7 +66,7 @@ def excluir(cpf):
     conexao.close()
     return redirect('/')
 
-# --------- Rodar localmente ----------
+# ---------- Rodar localmente ----------
 if __name__ == '__main__':
     inicializar_banco()
     app.run(debug=True)
