@@ -1,10 +1,12 @@
 from flask import Flask, render_template, request, redirect
 import sqlite3
+import os
 
+# --------- App Flask ----------
 app = Flask(__name__)
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'minha_chave_segura')
 
-# ---------------- Banco ----------------
-
+# --------- Banco de dados ----------
 def inicializar_banco():
     conexao = sqlite3.connect('clientes.db')
     cursor = conexao.cursor()
@@ -24,9 +26,7 @@ def inicializar_banco():
 def conectar():
     return sqlite3.connect('clientes.db')
 
-
-# ---------------- Rotas ----------------
-
+# --------- Rotas ----------
 @app.route('/')
 def index():
     conexao = conectar()
@@ -35,7 +35,6 @@ def index():
     clientes = cursor.fetchall()
     conexao.close()
     return render_template('index.html', clientes=clientes)
-
 
 @app.route('/cadastrar', methods=['POST'])
 def cadastrar():
@@ -58,7 +57,6 @@ def cadastrar():
 
     return redirect('/')
 
-
 @app.route('/excluir/<cpf>')
 def excluir(cpf):
     conexao = conectar()
@@ -68,7 +66,7 @@ def excluir(cpf):
     conexao.close()
     return redirect('/')
 
-
+# --------- Rodar localmente ----------
 if __name__ == '__main__':
     inicializar_banco()
     app.run(debug=True)
